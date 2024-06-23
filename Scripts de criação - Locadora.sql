@@ -1,3 +1,106 @@
+CREATE DATABASE Locadora
+/* DDL */
+CREATE TABLE enderecos
+(
+	id serial primary key,
+	logradouro varchar (40) not null,
+	tipo varchar (40) not null,
+	complemento varchar (20),
+	cidade varchar (40)not null,
+	UF varchar (5)not null,
+	cep varchar (10)not null,
+	numero varchar (10)not null,
+	bairro varchar (60) not null
+)
+CREATE TABLE profissoes
+(
+	id serial primary key,
+	nome varchar (60) not null
+)
+CREATE TABLE categorias
+(
+	id serial primary key,	
+	nome varchar (40) not null,
+	valor money /* Pode não ter um valor tabelado */
+)
+CREATE TABLE generos
+(
+	id serial primary key,
+	nome varchar (60) not null
+)
+CREATE TABLE atores
+(
+	id serial primary key,
+	nome varchar (60) not null
+)
+CREATE TABLE filmes
+(
+	id serial primary key,
+	titulo_original varchar (100) not null,
+	titulo varchar (100) not null,
+	qtd integer not null,
+	fk_categoria integer not null,
+	fk_genero integer not null,
+	foreign key (fk_categoria) references categorias(id),
+	foreign key (fk_genero) references generos(id)
+)
+CREATE TABLE clientes
+(
+	id serial primary key,
+	cpf varchar (11) not null,
+	nome varchar (60) not null,
+	tel varchar (15) not null,
+	fk_profissao integer not null,
+	foreign key (fk_profissao) references profissoes(id)
+)
+CREATE TABLE locacoes
+(
+	id serial primary key,
+	data_loc date not null,
+	desconto money, /* Pode não ter um desconto */
+	multa money, /* Pode não ter uma multa */
+	sub_total money not null,
+	fk_cliente integer not null,
+	foreign key (fk_cliente) references clientes(id)
+)
+CREATE TABLE dependentes
+(
+	id serial primary key,
+	parentesco varchar (40) not null,
+	fk_cliente integer not null,
+	fk_dependente integer not null,
+	foreign key (fk_cliente) references clientes(id),
+	foreign key (fk_dependente) references clientes(id)
+)
+CREATE TABLE cli_enderecos
+(
+	id serial primary key,
+	fk_endereco integer not null,
+	fk_cliente integer not null,
+	foreign key (fk_endereco) references enderecos(id),
+	foreign key (fk_cliente) references clientes(id)
+)
+CREATE TABLE filme_ator
+(
+	id serial primary key,
+	e_ator varchar (1) not null,
+	e_diretor varchar (1) not null,
+	fk_filme integer not null,
+	fk_ator integer not null,
+	foreign key (fk_filme) references filmes(id),
+	foreign key (fk_ator) references atores(id)
+)
+CREATE TABLE locacao_filme
+(
+	id serial primary key,
+	valor money not null,
+	duracao integer not null,
+	devolucao date not null,
+	fk_locacao integer not null,
+	fk_filme integer not null,
+	foreign key (fk_locacao) references locacoes(id),
+	foreign key (fk_filme) references filmes(id)
+)
 /* DML */
 INSERT INTO generos (nome) VALUES ('Ação');
 INSERT INTO generos (nome) VALUES ('Aventura');
@@ -194,125 +297,8 @@ INSERT INTO locacao_filme (valor, duracao, devolucao, fk_locacao, fk_filme) VALU
 INSERT INTO locacao_filme (valor, duracao, devolucao, fk_locacao, fk_filme) VALUES (23.80, 8, '24-04-2024',20, 10)
 
 SELECT * FROM locacao_filme
-
---Código utilizado durante a atividade do professor Lucas do dia 20/06 para reverter
---as alterações realizadas pelo código Java.
 	
-DELETE FROM generos WHERE nome = 'Fantasia';
-DELETE FROM categorias WHERE nome = '+21';
-DELETE FROM enderecos WHERE logradouro = 'Rua Jacarandás 230';
-DELETE FROM filmes WHERE titulo = 'Vingadores a Era de Ultron';
-SELECT * FROM generos
-SELECT * FROM categorias
-SELECT * FROM enderecos
-SELECT * FROM filmes
-
-CREATE DATABASE Locadora
-/* DDL */
-CREATE TABLE enderecos
-(
-	id serial primary key,
-	logradouro varchar (40) not null,
-	tipo varchar (40) not null,
-	complemento varchar (20),
-	cidade varchar (40)not null,
-	UF varchar (5)not null,
-	cep varchar (10)not null,
-	numero varchar (10)not null,
-	bairro varchar (60) not null
-)
-CREATE TABLE profissoes
-(
-	id serial primary key,
-	nome varchar (60) not null
-)
-CREATE TABLE categorias
-(
-	id serial primary key,	
-	nome varchar (40) not null,
-	valor money /* Pode não ter um valor tabelado */
-)
-CREATE TABLE generos
-(
-	id serial primary key,
-	nome varchar (60) not null
-)
-CREATE TABLE atores
-(
-	id serial primary key,
-	nome varchar (60) not null
-)
-CREATE TABLE filmes
-(
-	id serial primary key,
-	titulo_original varchar (100) not null,
-	titulo varchar (100) not null,
-	qtd integer not null,
-	fk_categoria integer not null,
-	fk_genero integer not null,
-	foreign key (fk_categoria) references categorias(id),
-	foreign key (fk_genero) references generos(id)
-)
-CREATE TABLE clientes
-(
-	id serial primary key,
-	cpf varchar (11) not null,
-	nome varchar (60) not null,
-	tel varchar (15) not null,
-	fk_profissao integer not null,
-	foreign key (fk_profissao) references profissoes(id)
-)
-CREATE TABLE locacoes
-(
-	id serial primary key,
-	data_loc date not null,
-	desconto money, /* Pode não ter um desconto */
-	multa money, /* Pode não ter uma multa */
-	sub_total money not null,
-	fk_cliente integer not null,
-	foreign key (fk_cliente) references clientes(id)
-)
-CREATE TABLE dependentes
-(
-	id serial primary key,
-	parentesco varchar (40) not null,
-	fk_cliente integer not null,
-	fk_dependente integer not null,
-	foreign key (fk_cliente) references clientes(id),
-	foreign key (fk_dependente) references clientes(id)
-)
-CREATE TABLE cli_enderecos
-(
-	id serial primary key,
-	fk_endereco integer not null,
-	fk_cliente integer not null,
-	foreign key (fk_endereco) references enderecos(id),
-	foreign key (fk_cliente) references clientes(id)
-)
-CREATE TABLE filme_ator
-(
-	id serial primary key,
-	e_ator varchar (1) not null,
-	e_diretor varchar (1) not null,
-	fk_filme integer not null,
-	fk_ator integer not null,
-	foreign key (fk_filme) references filmes(id),
-	foreign key (fk_ator) references atores(id)
-)
-CREATE TABLE locacao_filme
-(
-	id serial primary key,
-	valor money not null,
-	duracao integer not null,
-	devolucao date not null,
-	fk_locacao integer not null,
-	fk_filme integer not null,
-	foreign key (fk_locacao) references locacoes(id),
-	foreign key (fk_filme) references filmes(id)
-)
-
 --Consultas
-
 
 -- 1  - Listar todos os filmes alugados por um cliente específico, incluindo a data de locação e a data de devolução.
 SELECT filmes.titulo as "Filme", clientes.nome as "Cliente", locacoes.data_loc as "Data da locação", locacao_filme.devolucao as "Data da devolução"
